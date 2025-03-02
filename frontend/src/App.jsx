@@ -9,6 +9,10 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import Sidebar from "./components/common/Sidebar";
 import RightPanel from "./components/common/RightPanel";
 
+import ChatHomePage from "./chat/pages/HomePage";
+import ChatSettingsPage from "./chat/pages/SettingsPage";
+import ChatProfilePage from "./chat/pages/ProfilePage";
+
 import { Toaster } from "react-hot-toast";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "./components/common/LoadingSpinner";
@@ -52,6 +56,11 @@ function App() {
 				<Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to='/' />} />
 				<Route path='/notifications' element={authUser ? <NotificationPage /> : <Navigate to='/login' />} />
 				<Route path='/profile/:username' element={authUser ? <ProfilePage /> : <Navigate to='/login' />} />
+			</Routes>
+			<Routes>
+				<Route path="/chat/" element={authUser ? <ChatHomePage /> : <Navigate to="/login" />} />
+				<Route path="/chat/settings" element={<ChatSettingsPage />} />
+				<Route path="/chat/profile" element={authUser ? <ChatProfilePage /> : <Navigate to="/login" />} />
 			</Routes>
 			{authUser && <RightPanel />}
 			<Toaster />
