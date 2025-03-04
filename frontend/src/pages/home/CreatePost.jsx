@@ -2,49 +2,46 @@ import { CiImageOn } from "react-icons/ci";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { axiosInstance } from "../../lib/axios";
 
 const CreatePost = () => {
 	const [text, setText] = useState("");
 	const [img, setImg] = useState(null);
 	const imgRef = useRef(null);
 
-	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+	const authUser = useAuthStore((state) => state.authUser);
 	const queryClient = useQueryClient();
 
 	const {
-		mutate: createPost,
-		isPending,
-		isError,
-		error,
-	} = useMutation({
-		mutationFn: async ({ text, img }) => {
-			try {
-				const res = await fetch("/api/posts/create", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ text, img }),
-				});
-				const data = await res.json();
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-				return data;
-			} catch (error) {
-				throw new Error(error);
-			}
-		},
+    mutate: createPost,
+    isPending,
+    isError,
+    error,
+  } = useMutation({
+    mutationFn: async ({ text, img }) => {
+      try {
+        const { data } = await axiosInstance.post("/posts/create", {
+          text,
+          img,
+        });
+        return data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.error || error.message || "Something went wrong"
+        );
+      }
+    },
 
-		onSuccess: () => {
-			setText("");
-			setImg(null);
-			toast.success("Post created successfully");
-			queryClient.invalidateQueries({ queryKey: ["posts"] });
-		},
-	});
+    onSuccess: () => {
+      setText("");
+      setImg(null);
+      toast.success("Post created successfully");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
 
 	const handleSubmit = (e) => {
 		e.preventDefault();

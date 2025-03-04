@@ -5,8 +5,7 @@ import { MdOutlineMail } from "react-icons/md";
 import { FaUser } from "react-icons/fa";
 import { MdPassword } from "react-icons/md";
 import { MdDriveFileRenameOutline } from "react-icons/md";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { useAuthStore } from "../../../stores/useAuthStore";
 
 const SignUpPage = () => {
 	const [formData, setFormData] = useState({
@@ -16,35 +15,12 @@ const SignUpPage = () => {
 		password: "",
 	});
 
-	const queryClient = useQueryClient();
-
-	const { mutate, isError, isPending, error } = useMutation({
-		mutationFn: async (formData) => {
-			try {
-				const res = await fetch("/api/auth/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-				const data = await res.json();
-				if (!res.ok) throw new Error(data.error || "Failed to create account");
-				return data;
-			} catch (error) {
-				console.error(error);
-				throw error;
-			}
-		},
-		onSuccess: () => {
-			toast.success("Account created successfully");
-			queryClient.invalidateQueries({ queryKey: ["authUser"] });
-		},
-	});
+  const { signup, isSigningUp } = useAuthStore();
 
 	const handleSubmit = (e) => {
-		e.preventDefault(); // page won't reload
-		mutate(formData);
+		e.preventDefault();
+    const success = validateForm();
+    if (success === true) signup(formData);
 	};
 
 	const handleInputChange = (e) => {

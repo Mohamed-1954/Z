@@ -1,11 +1,10 @@
-import { useChatStore } from "../store/useChatStore";
 import { useEffect, useRef } from "react";
-
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import MessageSkeleton from "./skeletons/MessageSkeleton";
-import { useAuthStore } from "../store/useAuthStore";
-import { formatMessageTime } from "../lib/utils";
+import { formatMessageTime } from "../../lib/utils";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { useChatStore } from "../../stores/useChatStore";
 
 const ChatContainer = () => {
   const {
@@ -16,7 +15,7 @@ const ChatContainer = () => {
     subscribeToMessages,
     unsubscribeFromMessages,
   } = useChatStore();
-  const { authUser } = useAuthStore();
+  const authUser = useAuthStore((state) => state.authUser);
   const messageEndRef = useRef(null);
 
   useEffect(() => {
@@ -35,7 +34,7 @@ const ChatContainer = () => {
 
   if (isMessagesLoading) {
     return (
-      <div className="flex-1 flex flex-col overflow-auto">
+      <div className="flex-1 flex flex-col overflow-auto w-full">
         <ChatHeader />
         <MessageSkeleton />
         <MessageInput />
@@ -44,7 +43,7 @@ const ChatContainer = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-auto">
+    <div className="flex-1 flex flex-col overflow-auto w-full">
       <ChatHeader />
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">

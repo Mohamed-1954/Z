@@ -16,6 +16,8 @@ import { formatMemberSinceDate } from "../../utils/date";
 
 import useFollow from "../../hooks/useFollow";
 import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
+import { useAuthStore } from "../../stores/useAuthStore";
+import { axiosInstance } from "../../lib/axios";
 
 const ProfilePage = () => {
 	const [coverImg, setCoverImg] = useState(null);
@@ -28,28 +30,26 @@ const ProfilePage = () => {
 	const { username } = useParams();
 
 	const { follow, isPending } = useFollow();
-	const { data: authUser } = useQuery({ queryKey: ["authUser"] });
+	const authUser = useAuthStore((state) => state.authUser);
 
 	const {
-		data: user,
-		isLoading,
-		refetch,
-		isRefetching,
-	} = useQuery({
-		queryKey: ["userProfile"],
-		queryFn: async () => {
-			try {
-				const res = await fetch(`/api/users/profile/${username}`);
-				const data = await res.json();
-				if (!res.ok) {
-					throw new Error(data.error || "Something went wrong");
-				}
-				return data;
-			} catch (error) {
-				throw new Error(error);
-			}
-		},
-	});
+    data: user,
+    isLoading,
+    refetch,
+    isRefetching,
+  } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: async () => {
+      try {
+        const { data } = await axiosInstance.get(`/users/profile/${username}`);
+        return data;
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.error || error.message || "Something went wrong"
+        );
+      }
+    },
+  });
 
 	const { isUpdatingProfile, updateProfile } = useUpdateUserProfile();
 

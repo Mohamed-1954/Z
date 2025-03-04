@@ -9,6 +9,8 @@ import userRoutes from "./routes/user.route.js";
 import postRoutes from "./routes/post.route.js";
 import notificationRoutes from "./routes/notification.route.js";
 import messageRoutes from "./routes/message.route.js";
+import cors from "cors"
+import { app, server } from "./lib/utils/socket.js";
 
 import connectMongoDB from "./db/connectMongoDB.js";
 
@@ -20,15 +22,20 @@ cloudinary.config({
 	api_secret: process.env.CLOUDINARY_API_SECRET || "",
 });
 
-const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
 
 app.use(express.json({ limit: "5mb" })); // to parse req.body
 // limit shouldn't be too high to prevent DOS
 app.use(express.urlencoded({ extended: true })); // to parse form data(urlencoded)
-
 app.use(cookieParser());
+
+app.use(
+	cors({
+		origin: "http://localhost:5173",
+		credentials: true,
+	})
+);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -44,7 +51,7 @@ if (process.env.NODE_ENV === "production") {
 	});
 }
 
-app.listen(Number(PORT), () => {
+server.listen(Number(PORT), () => {
 	console.log(`Server is running on port ${PORT}`);
 	connectMongoDB();
 });

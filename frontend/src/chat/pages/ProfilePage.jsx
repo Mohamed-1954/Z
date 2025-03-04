@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuthStore } from "../store/useAuthStore";
 import { Camera, Mail, User } from "lucide-react";
+import { useAuthStore } from "../../stores/useAuthStore";
 
 const ChatProfilePage = () => {
   const { authUser, isUpdatingProfile, updateProfile } = useAuthStore();
