@@ -8,26 +8,33 @@ import { MdDriveFileRenameOutline } from "react-icons/md";
 import { useAuthStore } from "../../../stores/useAuthStore";
 
 const SignUpPage = () => {
-	const [formData, setFormData] = useState({
-		email: "",
-		username: "",
-		fullName: "",
-		password: "",
-	});
+  const [formData, setFormData] = useState({
+    email: "",
+    username: "",
+    fullName: "",
+    password: "",
+  });
 
   const { signup, isSigningUp } = useAuthStore();
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
+  const validateForm = () => {
+    if (!formData.email || !formData.username || !formData.fullName || !formData.password) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
     const success = validateForm();
     if (success === true) signup(formData);
-	};
+  };
 
-	const handleInputChange = (e) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
-	};
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-	return (
+  return (
     <div className="max-w-screen-xl mx-auto flex h-screen px-10">
       <div className="flex-1 hidden lg:flex items-center  justify-center">
         <XSvg className="lg:w-2/3 fill-white" />
